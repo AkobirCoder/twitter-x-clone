@@ -21,20 +21,20 @@ export default function Modal({
 }: ModalProps) {
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className='bg-black p-1'>
-                <div className='flex items-center gap-4'>
-                    <button className='p-1 border-0 text-white hover:opacity-70 transition w-fit cursor-pointer'>
-                        <X size={28} onClick={onClose} />
+            <DialogContent className='bg-black p-2'>
+                <div className='flex items-center gap-5'>
+                    <button className='p-1 text-white hover:bg-neutral-800 hover:opacity-70 rounded-md transition cursor-pointer' onClick={onClose}>
+                        <X size={20} />
                     </button>
                     {
                         step && totalSteps && (
-                            <div className='text-xl font-bold'>Step {step} of {totalSteps}</div>
+                            <div className='text-lg'>Step {step} of {totalSteps}</div>
                         )
                     }
                 </div>
                 <div className='mt-4'>{body}</div>
                 {
-                    footer && <div className='mt-4'>{footer}</div>
+                    footer && <div>{footer}</div>
                 }
             </DialogContent>
         </Dialog>
