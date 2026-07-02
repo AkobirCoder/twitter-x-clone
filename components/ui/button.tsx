@@ -8,7 +8,8 @@ interface ButtonProps {
     large?: boolean,
     disabled?: boolean,
     outline?: boolean,
-    type?: 'button' | 'submit';
+    className?: ReactNode | string,
+    type?: 'button' | 'submit',
     onClick?: () => void,
 }
 
@@ -19,6 +20,7 @@ export default function Button({
     large,
     disabled,
     outline,
+    className,
     type,
     onClick
 }: ButtonProps) {
@@ -36,7 +38,7 @@ export default function Button({
                     outline 
                         ? 'bg-transparent border-slate-600 text-sky-500 hover:bg-slate-800/40' 
                         : '',
-                    
+                    className
                 )
             }
         >
