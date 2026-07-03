@@ -10,8 +10,10 @@ import { registerStep1Schema, registerStep2Schema } from '@/lib/validation';
 import { Field, FieldError, FieldLabel } from '../ui/field';
 import { Input } from '../ui/input';
 import Button from '../ui/button';
-import { ArrowRight } from 'lucide-react';
+import { AlertCircleIcon, ArrowRight } from 'lucide-react';
 import useLoginModal from '@/hooks/use-login-modal';
+import axios from 'axios';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
 export default function RegisterModal() {
     const [step, setStep] = useState(1);
@@ -36,7 +38,7 @@ export default function RegisterModal() {
     const bodyContent = step === 1 ? (
         <RegisterStep1 setData={setData} setStep={setStep} />
     ) : (
-        <RegisterStep2 />
+        <RegisterStep2 data={data} />
     );
 
     const footer = (
@@ -71,6 +73,8 @@ function RegisterStep1({setData, setStep}: {
     }>>,
     setStep: Dispatch<SetStateAction<number>>,
 }) {
+    const [error, setError] = useState('');
+
     const form = useForm<z.infer<typeof registerStep1Schema>>({
         resolver: zodResolver(registerStep1Schema),
         defaultValues: {
@@ -79,16 +83,40 @@ function RegisterStep1({setData, setStep}: {
         }
     });
 
-    function onSubmit(values: z.infer<typeof registerStep1Schema>) {
-        setData(values);
+    async function onSubmit(values: z.infer<typeof registerStep1Schema>) {
+        try {
+            const { data: response } = await axios.post('/api/auth/register?step=1', values);
 
-        setStep(2);
+            if (response.success) {
+                setData(values);
+
+                setStep(2);
+            }
+        } catch (error: any) {
+            if (error.response.data.error) {
+                setError(error.response.data.error);
+            } else {
+                setError('Something went wrong. Please try again later.');
+            }
+            console.log(error);
+        }
     }
 
     const { isSubmitting } = form.formState;
 
     return (
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4 px-12'>
+            {
+                error && (
+                    <Alert variant="destructive" className="max-w-md">
+                        <AlertCircleIcon />
+                        <AlertTitle>Error</AlertTitle>
+                        <AlertDescription>
+                            {error}
+                        </AlertDescription>
+                    </Alert>
+                )
+            }
             <h3 className='text-2xl font-semibold text-white'>
                 Create an account
             </h3>
@@ -152,7 +180,16 @@ function RegisterStep1({setData, setStep}: {
     );
 }
 
-function RegisterStep2() {
+function RegisterStep2({data}: {
+    data: {
+        name: string,
+        email: string,
+    }
+}) {
+    const [error, setError] = useState('');
+
+    const registerModal = useRegisterModal();
+    
     const form = useForm<z.infer<typeof registerStep2Schema>>({
         resolver: zodResolver(registerStep2Schema),
         defaultValues: {
@@ -161,14 +198,41 @@ function RegisterStep2() {
         }
     });
 
-    function onSubmit(values: z.infer<typeof registerStep2Schema>) {
-        console.log(values);
+    async function onSubmit(values: z.infer<typeof registerStep2Schema>) {
+        try {
+            const { data: response } = await axios.post('/api/auth/register?step=2', {
+                ...data,
+                ...values,
+            });
+
+            if(response.success) {
+                registerModal.onClose();
+            }
+        } catch (error: any) {
+            if (error.response.data.error) {
+                setError(error.response.data.error);
+            } else {
+                setError('Something went wrong. Please try again later.');
+            }
+            console.log(error);
+        }
     }
 
     const { isSubmitting } = form.formState;
 
     return (
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4 px-12'>
+            {
+                error && (
+                    <Alert variant="destructive" className="max-w-md">
+                        <AlertCircleIcon />
+                        <AlertTitle>Error</AlertTitle>
+                        <AlertDescription>
+                            {error}
+                        </AlertDescription>
+                    </Alert>
+                )
+            }
             <Controller
                 name='username'
                 control={form.control}
