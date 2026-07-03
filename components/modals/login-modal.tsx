@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import Modal from '../ui/modal';
 import useLoginModal from '@/hooks/use-login-modal';
 import * as z from 'zod';
@@ -9,8 +9,13 @@ import { Field, FieldError, FieldLabel } from '../ui/field';
 import { Input } from '../ui/input';
 import Button from '../ui/button';
 import useRegisterModal from '@/hooks/use-register-modal';
+import axios from 'axios';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { AlertCircleIcon } from 'lucide-react';
 
 export default function LoginModal() {
+    const [error, setError] = useState('');
+
     const loginModal = useLoginModal();
 
     const registerModal = useRegisterModal();
@@ -31,14 +36,37 @@ export default function LoginModal() {
         }
     });
 
-    function onSubmit(values: z.infer<typeof loginSchema>) {
-        console.log(values);
+    async function onSubmit(values: z.infer<typeof loginSchema>) {
+        try {
+            const { data } = await axios.post('/api/auth/login', values);
+
+            if (data.success) {
+                loginModal.onClose();
+            }
+        } catch (error: any) {
+            if (error.response.data.error) {
+                setError(error.response.data.error);
+            } else {
+                setError('Something went wrong. Please try again later.');
+            }
+        }
     }
 
     const { isSubmitting } = form.formState;
 
     const bodyContent = (
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4 px-12'>
+            {
+                error && (
+                    <Alert variant="destructive" className="max-w-md">
+                        <AlertCircleIcon />
+                        <AlertTitle>Error</AlertTitle>
+                        <AlertDescription>
+                            {error}
+                        </AlertDescription>
+                    </Alert>
+                )
+            }
             <h3 className='text-2xl font-semibold text-white'>
                 Signin your profile
             </h3>
@@ -63,7 +91,7 @@ export default function LoginModal() {
                 )}
             />
             <Controller
-                name='email'
+                name='password'
                 control={form.control}
                 render={({ field, fieldState }) => (
                     <Field>
