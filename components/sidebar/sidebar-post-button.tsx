@@ -12,15 +12,15 @@ const SidebarPostButton = () => {
                 className={`mt-6 lg:hidden rounded-full h-14 w-14 p-4 flex items-center justify-center 
                 bg-sky-500 hover:bg-sky-500/80 transition cursor-pointer`}
             >
-                <Feather size={24} color='white' />
+                <Feather size={20} color='white' />
             </div>
 
             {/* --- Desktop Post --- */}
             <div
-                className={`mt-6 hidden lg:block px-4 py-2 rounded-full 
+                className={`mt-6 hidden lg:block px-4 py-2 rounded-md
                 bg-sky-500 hover:bg-sky-500/90 cursor-pointer`}
             >
-                <p className='hidden lg:block text-center font-semibold text-white text-[20px]'>
+                <p className='hidden lg:block text-center font-semibold text-white text-sm'>
                     POST
                 </p>
             </div>
