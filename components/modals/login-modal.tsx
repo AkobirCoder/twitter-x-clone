@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useCallback, useState } from 'react';
 import Modal from '../ui/modal';
 import useLoginModal from '@/hooks/use-login-modal';
@@ -12,6 +14,7 @@ import useRegisterModal from '@/hooks/use-register-modal';
 import axios from 'axios';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { AlertCircleIcon } from 'lucide-react';
+import { signIn } from 'next-auth/react';
 
 export default function LoginModal() {
     const [error, setError] = useState('');
@@ -41,6 +44,8 @@ export default function LoginModal() {
             const { data } = await axios.post('/api/auth/login', values);
 
             if (data.success) {
+                signIn('credentials', values);
+
                 loginModal.onClose();
             }
         } catch (error: any) {
