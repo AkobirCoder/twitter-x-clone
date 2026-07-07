@@ -15,18 +15,18 @@ const SidebarItem = ({label, icon: Icon}: SidebarItemProps) => {
             {/* --- Mobile Sidebar Item --- */}
             <div
                 className={`relative rounded-full h-14 w-14 flex items-center justify-center p-4
-                hover:bg-slate-600 hover:bg-opacity-10 lg:hidden`}
+                hover:bg-accent lg:hidden`}
             >
-                <Icon size={28} color='white' />
+                <Icon size={20} color='white' />
             </div>
 
             {/* --- Desktop Sidebar Item --- */}
             <div
-                className={`relative hidden lg:flex items-center gap-4 px-4 py-2 rounded-full
-                hover:bg-slate-600 hover:bg-opacity-10 cursor-pointer`}
+                className={`relative hidden lg:flex w-full items-center gap-4 px-4 py-2 rounded-md
+                hover:bg-accent cursor-pointer`}
             >
-                <Icon size={24} color='white' />
-                <p className='hidden lg:block text-xl text-white'>
+                <Icon size={20} color='white' />
+                <p className='hidden lg:block text-sm text-white'>
                     {label}
                 </p>
             </div>
