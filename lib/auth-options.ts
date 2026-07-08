@@ -3,6 +3,7 @@ import { connectToDatabase } from "./mongoose";
 import User from "@/database/user.model";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
+import AppleProvider from "next-auth/providers/apple";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authOptions: AuthOptions = {
@@ -34,6 +35,10 @@ export const authOptions: AuthOptions = {
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID as string,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+        }),
+        AppleProvider({
+            clientId: process.env.APPLE_ID as string,
+            clientSecret: process.env.APPLE_SECRET as string,
         }),
     ],
 
