@@ -5,6 +5,7 @@ import React, { useCallback } from 'react';
 import Button from '../ui/button';
 import { FcGoogle } from 'react-icons/fc';
 import { AiFillGithub } from 'react-icons/ai';
+import { FaApple } from 'react-icons/fa';
 import useRegisterModal from '@/hooks/use-register-modal';
 import RegisterModal from '../modals/register-modal';
 import useLoginModal from '@/hooks/use-login-modal';
@@ -65,6 +66,19 @@ export default function Auth() {
                                 fullWidth
                                 secondary
                                 onClick={() => signIn('google')}
+                            />
+                            <Button 
+                                label={
+                                    <div 
+                                        className='flex gap-2 items-center justify-center'
+                                    >
+                                        <FaApple />
+                                        Signup with Apple
+                                    </div>
+                                } 
+                                fullWidth
+                                secondary
+                                onClick={() => signIn("github")}
                             />
                             <Button 
                                 label={
