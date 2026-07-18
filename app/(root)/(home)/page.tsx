@@ -1,22 +1,40 @@
-// import Auth from '@/components/auth';
+"use client"
+
 import Form from '@/components/shared/form';
 import Header from '@/components/shared/header';
-import { authOptions } from '@/lib/auth-options';
-import { getServerSession } from 'next-auth';
-import React from 'react';
+import PostItem from '@/components/shared/post-item';
+import { IPost } from '@/types';
+import axios from 'axios';
+import { Loader2 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import React, { useEffect, useState } from 'react';
 
-export default async function Page() {
-    // const user = false;
+export default function Page() {
+    const { data: session, status } = useSession();
 
-    // if (!user) {
-    //     return (
-    //         <div className='container h-screen max-w-7xl mx-auto'>
-    //             <Auth />
-    //         </div>
-    //     );
-    // }
+    const [isLoading, setIsLoading] = useState(false);
 
-    const session = await getServerSession(authOptions);
+    const [posts, setPosts] = useState<IPost[]>([]);
+
+    useEffect(() => {
+        const getPosts = async () => {
+            try {
+                setIsLoading(true);
+
+                const { data } = await axios.get('/api/posts?limit=10');
+
+                setPosts(data);
+
+                setIsLoading(false);
+            } catch (error) {
+                setIsLoading(false);
+
+                console.log(error);
+            }
+        }
+
+        getPosts();
+    }, []);
 
     return (
         <>
@@ -24,10 +42,28 @@ export default async function Page() {
                 label='Home' 
                 isBack 
             />
-            <Form 
-                placeholder="What's on your mind" 
-                user={JSON.parse(JSON.stringify(session?.currentUser))} 
-            />
+            {
+                isLoading || status === 'loading' ? (
+                    <div className='flex items-center justify-center h-24'>
+                        <Loader2 className='animate-spin text-sky-500' />
+                    </div>
+                ) : (
+                    <>
+                        <Form 
+                            placeholder="What's on your mind" 
+                            user={JSON.parse(JSON.stringify(session?.currentUser))}
+                            setPosts={setPosts}
+                        />
+                        {
+                            posts.map((post) => {
+                                return (
+                                    <PostItem key={post._id} post={post} user={JSON.parse(JSON.stringify(session?.currentUser))} />
+                                );
+                            })
+                        }
+                    </>
+                )
+            }
         </>
     );
 }
