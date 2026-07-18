@@ -1,19 +1,45 @@
 "use client"
 
 import { IPost, IUser } from '@/types';
-import React from 'react';
+import React, { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { sliceText } from '@/lib/utils';
 import { formatDistanceToNowStrict } from 'date-fns'; 
 import { AiFillDelete, AiOutlineMessage } from 'react-icons/ai';
 import { FaHeart } from 'react-icons/fa';
 import { toast } from 'sonner';
+import axios from 'axios';
+import { Loader2 } from 'lucide-react';
 
-const PostItem = ({post, user}: {post: IPost, user: IUser}) => {
+interface Props {
+    post: IPost,
+    user: IUser,
+    setPosts: React.Dispatch<React.SetStateAction<IPost[]>>,
+}
+
+const PostItem = ({post, user, setPosts}: Props) => {
+    const [isLoading, setIsLoading] = useState(false);
+
     const onDelete = async () => {
         try {
-            
+            setIsLoading(true);
+
+            await axios.delete('/api/posts', {
+                data: {
+                    postId: post._id,
+                }
+            });
+
+            setPosts((prevState) => {
+                return prevState.filter((p) => p._id !== post._id);
+            });
+
+            setIsLoading(false);
+
+            toast.success('Post deleted successfully!');
         } catch (error) {
+            setIsLoading(false);
+
             toast('Error', {
                 description: 'Something went wrong. Please try again later.',
             });
@@ -23,8 +49,17 @@ const PostItem = ({post, user}: {post: IPost, user: IUser}) => {
     return (
         <div
             className={`border-b border-neutral-800 p-5 cursor-pointer
-            hover:bg-neutral-900 transition`}
+            hover:bg-neutral-900 transition relative`}
         >
+            {
+                isLoading && (
+                    <div className='absolute inset-0 w-full h-full bg-black opacity-50'>
+                        <div className='flex items-center justify-center h-full'>
+                            <Loader2 className='animate-spin text-sky-500' />
+                        </div>
+                    </div>
+                )
+            }
             <div className='flex flex-row items-center gap-3'>
                 <Avatar>
                     <AvatarImage src={post.user.profileImage} />
@@ -80,6 +115,7 @@ const PostItem = ({post, user}: {post: IPost, user: IUser}) => {
                                 <div
                                     className={`flex flex-row items-center gap-2 text-neutral-500
                                     cursor-pointer hover:text-red-500 transition`}
+                                    onClick={onDelete}
                                 >
                                     <AiFillDelete size={15} />
                                 </div>
