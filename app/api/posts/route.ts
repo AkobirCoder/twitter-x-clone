@@ -46,3 +46,19 @@ export async function GET(req: Request) {
         return NextResponse.json({error: result.message}, {status: 400});
     }
 }
+
+export async function DELETE(req: Request) {
+    try {
+        await connectToDatabase();
+
+        const { postId, userId } = await req.json();
+
+        await Post.findByIdAndDelete(postId);
+
+        return NextResponse.json({message: 'Post deleted successfully!'});
+    } catch (error) {
+        const result = error as Error;
+
+        return NextResponse.json({error: result.message}, {status: 400});
+    }
+}
