@@ -39,8 +39,7 @@ export default function Page() {
     return (
         <>
             <Header 
-                label='Home' 
-                isBack 
+                label='Home'
             />
             {
                 isLoading || status === 'loading' ? (
