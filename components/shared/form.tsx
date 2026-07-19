@@ -29,7 +29,7 @@ const Form = ({placeholder, isComment, postId, user, setPosts}: Props) => {
                 userId: user._id,
             });
 
-            const newPost = {...data, user}
+            const newPost = {...data, user, likes: 0, hasLiked: false, comments: 0}
 
             setPosts((prevState) => {
                 return [newPost, ...prevState];
