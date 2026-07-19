@@ -1,6 +1,8 @@
 import Post from "@/database/post.model";
 import User from "@/database/user.model";
+import { authOptions } from "@/lib/auth-options";
 import { connectToDatabase } from "@/lib/mongoose";
+import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -24,6 +26,17 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
     try {
+        const session = await getServerSession(authOptions);
+
+        if (!session?.currentUser) {
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const { currentUser } = session;
+
         await connectToDatabase();
 
         const { searchParams } = new URL(req.url);
@@ -39,7 +52,25 @@ export async function GET(req: Request) {
             .limit(Number(limit))
             .sort({createdAt: -1});
 
-        return NextResponse.json(posts);
+        const filteredPosts = posts.map((post) => {
+            return {
+                body: post.body,
+                createdAt: post.createdAt,
+                user: {
+                    _id: post.user._id,
+                    name: post.user.name,
+                    username: post.user.username,
+                    profileImage: post.user.profileImage,
+                    email: post.user.email,
+                },
+                likes: post.likes.length,
+                comments: post.comments.length,
+                hasLiked: post.likes.includes(currentUser._id),
+                _id: post._id,
+            }
+        });
+
+        return NextResponse.json(filteredPosts);
     } catch (error) {
         const result = error as Error;
 
