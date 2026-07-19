@@ -37,7 +37,51 @@ const PostItem = ({post, user, setPosts}: Props) => {
             setIsLoading(false);
 
             toast.success('Post deleted successfully!');
-        } catch (error) {
+        } catch {
+            setIsLoading(false);
+
+            toast('Error', {
+                description: 'Something went wrong. Please try again later.',
+            });
+        }
+    }
+
+    const onLike = async () => {
+        try {
+            setIsLoading(true);
+
+            if (post.hasLiked) {
+                await axios.delete('/api/likes', {
+                    data: {
+                        postId: post._id,
+                        userId: user._id,
+                    }
+                });
+
+                const updatedPosts = {...post, hasLiked: false, likes: post.likes - 1}
+
+                setPosts((prevState) => {
+                    return prevState.map((p) => {
+                        return p._id === post._id ? updatedPosts : p
+                    });
+                });
+            } else {
+                await axios.put('/api/likes', {
+                    postId: post._id,
+                    userId: user._id,
+                });
+
+                const updatedPosts = {...post, hasLiked: true, likes: post.likes + 1}
+
+                setPosts((prevState) => {
+                    return prevState.map((p) => {
+                        return p._id === post._id ? updatedPosts : p
+                    });
+                });
+            }
+
+            setIsLoading(false);
+        } catch {
             setIsLoading(false);
 
             toast('Error', {
@@ -99,15 +143,16 @@ const PostItem = ({post, user, setPosts}: Props) => {
                             hover:text-sky-500 transition`}
                         >
                             <AiOutlineMessage size={15} />
-                            <p>{post.comments.length || 0}</p>
+                            <p>{post.comments || 0}</p>
                         </div>
 
                         <div
                             className={`flex flex-row items-center text-neutral-500 gap-2 cursor-pointer
                             hover:text-red-500 transition`}
+                            onClick={onLike}
                         >
-                            <FaHeart size={15} />
-                            <p>{post.likes.length || 0}</p>
+                            <FaHeart size={15} color={post.hasLiked ? 'red' : ''} />
+                            <p>{post.likes || 0}</p>
                         </div>
 
                         {
