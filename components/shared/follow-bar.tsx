@@ -44,7 +44,6 @@ const FollowBar = () => {
                         </div>
                     )
                 }
-                
             </div>
         </div>
     );
