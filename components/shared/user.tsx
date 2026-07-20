@@ -23,7 +23,7 @@ const User = ({user}: {user: IUser}) => {
                     <p className='text-neutral-400 text-xs line-clamp-1'>
                         {
                             user.username ? (
-                                `${sliceText(user.username, 25)}`
+                                `@${sliceText(user.username, 25)}`
                             ) : (
                                 sliceText(user.email, 25)
                             )
