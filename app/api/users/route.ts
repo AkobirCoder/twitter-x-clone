@@ -10,7 +10,9 @@ export async function GET(req: Request) {
 
         const limit = searchParams.get('limit');
 
-        const users = await User.find({}).select('name username _id email profileImage').limit(Number(limit));
+        const users = await User.find({})
+            .select('name username _id email profileImage')
+            .limit(Number(limit));
 
         return NextResponse.json(users);
     } catch (error) {
