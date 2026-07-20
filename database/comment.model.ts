@@ -9,7 +9,13 @@ const CommentSchema = new mongoose.Schema({
     post: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post',
-    }
+    },
+    likes: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User', 
+        },
+    ],
 }, {timestamps: true});
 
 const Comment = mongoose.models.Comment || mongoose.model('Comment', CommentSchema);
