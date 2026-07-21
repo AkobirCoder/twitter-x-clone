@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { IPost, IUser } from '@/types';
@@ -10,6 +11,7 @@ import { FaHeart } from 'react-icons/fa';
 import { toast } from 'sonner';
 import axios from 'axios';
 import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface Props {
     post: IPost,
@@ -20,7 +22,11 @@ interface Props {
 const PostItem = ({post, user, setPosts}: Props) => {
     const [isLoading, setIsLoading] = useState(false);
 
-    const onDelete = async () => {
+    const router = useRouter();
+
+    const onDelete = async (event: any) => {
+        event.stopPropagation();
+
         try {
             setIsLoading(true);
 
@@ -46,7 +52,9 @@ const PostItem = ({post, user, setPosts}: Props) => {
         }
     }
 
-    const onLike = async () => {
+    const onLike = async (event: any) => {
+        event.stopPropagation();
+        
         try {
             setIsLoading(true);
 
@@ -90,6 +98,10 @@ const PostItem = ({post, user, setPosts}: Props) => {
         }
     }
 
+    const goToPost = async () => {
+        router.push(`posts/${post._id}`);
+    }
+
     return (
         <div
             className={`border-b border-neutral-800 p-5 cursor-pointer
@@ -104,7 +116,7 @@ const PostItem = ({post, user, setPosts}: Props) => {
                     </div>
                 )
             }
-            <div className='flex flex-row items-center gap-3'>
+            <div className='flex flex-row items-center gap-3' onClick={goToPost}>
                 <Avatar>
                     <AvatarImage src={post.user.profileImage} />
                     <AvatarFallback>
@@ -120,7 +132,7 @@ const PostItem = ({post, user, setPosts}: Props) => {
                         <span className='text-neutral-500 text-sm cursor-pointer hover:underline hidden md:block'>
                             {
                                 post.user.username ? (
-                                    `${sliceText(post.user.username, 25)}`
+                                    `@${sliceText(post.user.username, 25)}`
                                 ) : (
                                     sliceText(post.user.email, 25)
                                 )
