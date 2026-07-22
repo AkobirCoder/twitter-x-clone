@@ -24,23 +24,44 @@ const Form = ({placeholder, isComment, postId, user, setPosts}: Props) => {
         try {
             setIsLoading(true);
 
-            const { data } = await axios.post('/api/posts', {
-                body,
-                userId: user._id,
-            });
+            if (isComment) {
+                const { data } = await axios.post('/api/comments', {
+                    body,
+                    postId,
+                    userId: user._id,
+                });
 
-            const newPost = {...data, user, likes: 0, hasLiked: false, comments: 0}
+                const newComment = {
+                    ...data,
+                    user,
+                    likes: 0,
+                    hasLiked: false,
+                }
 
-            setPosts((prevState) => {
-                return [newPost, ...prevState];
-            });
+                setPosts((prevState) => {
+                    return [newComment, ...prevState];
+                });
+
+                setBody('');
+            } else {
+                const { data } = await axios.post('/api/posts', {
+                    body,
+                    userId: user._id,
+                });
+
+                const newPost = {...data, user, likes: 0, hasLiked: false, comments: 0}
+
+                setPosts((prevState) => {
+                    return [newPost, ...prevState];
+                });
+
+                setBody('');
+
+                toast.success('Post created successfully!');
+            }
 
             setIsLoading(false);
-
-            setBody('');
-
-            toast.success('Post created successfully!');
-        } catch (error) {
+        } catch {
             setIsLoading(false);
 
             toast('Error', {
@@ -78,7 +99,7 @@ const Form = ({placeholder, isComment, postId, user, setPosts}: Props) => {
 
                     <div className='flex flex-row justify-end mt-4'>
                         <Button
-                            label={'Post'}
+                            label={isComment ? 'Reply' : 'Post'}
                             disabled={isLoading || !body}
                             className='rounded-md px-8 py-1'
                             onClick={onSubmit}
